@@ -1,0 +1,170 @@
+﻿@using Models
+@model List<Department>
+
+<div class="card shadow border-0 my-4">
+    <div class="card-header bg-secondary bg-gradient ml-0 py-3">
+        <div class="row">
+            <div class="col-12 text-center">
+                <h2 class="text-white py-2">Create Department</h2>
+            </div>
+        </div>
+    </div>
+    <div class="card-body p-4">
+        <div class="row pb-3">
+            <div class="col-6">
+            </div>
+            <div class="col-6 text-end">
+                @if (ViewBag.Role == "Admin")
+                {
+                    <a id="btnAddRow" class="btn btn-primary">
+                        <i class="bi bi-plus-circle"></i> Create New Department
+                    </a>
+                }
+            </div>
+        </div>
+
+        <table id="tblData" class="table table-bordered table-striped" style="width:100%">
+            <thead>
+                <tr>
+                    <th>English Name</th>
+                    <th>Arabic Name</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Rows will be dynamically added here -->
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            var departmentsJson = @Html.Raw(Json.Serialize(Model)); // Serialize the Razor model to JSON
+
+            // Function to populate initial table data
+            function populateTable(data) {
+                data.forEach(item => {
+                    var row = `
+                                    <tr>
+                                        <td>${item.nameEN}</td>
+                                        <td>${item.nameAR}</td>
+                                        <td>
+                                            <button class="btn btn-danger btnDelete" data-id="${item.id}"><i class="bi bi-trash"></i> Delete</button>
+                                        </td>
+                                    </tr>`;
+                    $('#tblData tbody').append(row);
+                });
+            }
+
+            // Initial population of the table
+            populateTable(departmentsJson);
+
+            // Add Row Button Click Handler
+            $('#btnAddRow').on('click', function (e) {
+                e.preventDefault();
+
+                // Check if there's already an editable row
+                if ($('#tblData').find('.editable-row').length > 0) {
+                    alert('Finish editing the existing row before adding a new one.');
+                    return;
+                }
+
+                // Add a new row with input fields for NameEn and NameAr
+                var newRow = `
+                                <tr class="editable-row">
+                                    <td><input type="text" class="form-control" id="inputNameEn" placeholder="Enter Name in English"></td>
+                                    <td><input type="text" class="form-control" id="inputNameAr" placeholder="Enter Name in Arabic"></td>
+                                    <td class="text-center">
+                                        <button class="btn btn-success btnSaveRow"><i class="bi bi-check-circle"></i> Save</button>
+                                        <button class="btn btn-danger btnCancelRow"><i class="bi bi-x-circle"></i> Cancel</button>
+                                    </td>
+                                </tr>`;
+
+                $('#tblData').find('tbody').append(newRow);
+            });
+
+            // Save Row Button Click Handler
+            $('#tblData').on('click', '.btnSaveRow', function () {
+                var $row = $(this).closest('tr');
+                var nameEn = $row.find('#inputNameEn').val().trim();
+                var nameAr = $row.find('#inputNameAr').val().trim();
+
+                // Validate inputs
+                if (nameEn === "" || nameAr === "") {
+                    alert("Please fill in both fields.");
+                    return;
+                }
+
+                // Prepare department data object
+                var department = {
+                    nameEN: nameEn,
+                    nameAR: nameAr
+                };
+
+                // Send data to server via AJAX
+                $.ajax({
+                    url: '@Url.Action("SaveDepartment", "Department")',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(department),
+                    success: function (response) {
+                        if (response.success) {
+                            // Reload the page to refresh the departments list
+                            location.reload();
+                        } else {
+                            alert('Error saving department: ' + response.message);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        alert('An error occurred while saving the department: ' + error);
+                    }
+                });
+            });
+
+            // Cancel Row Button Click Handler
+            $('#tblData').on('click', '.btnCancelRow', function () {
+                $(this).closest('tr').remove();
+            });
+
+            // Delete Button Click Handler
+            $('#tblData').on('click', '.btnDelete', function () {
+                var departmentId = $(this).data('id');
+                var url = '@Url.Action("Delete", "Department")' + '?id=' + departmentId;
+
+                // Use SweetAlert for confirmation
+                Swal.fire({
+                    title: "Are you sure?",
+                    text: "You won't be able to revert this!",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#3085d6",
+                    cancelButtonColor: "#d33",
+                    confirmButtonText: "Yes, delete it!"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // AJAX call to delete
+                        $.ajax({
+                            url: url,
+                            type: 'DELETE',
+                            success: function (data) {
+                                if (data.success) {
+                                    // Reload the page to refresh the departments list
+                                    location.reload();
+                                    toastr.success(data.message);
+                                } else {
+                                    toastr.error(data.message);
+                                }
+                            },
+                            error: function (xhr, status, error) {
+                                toastr.error('An error occurred while deleting the department: ' + error);
+                            }
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+
+}
