@@ -93,6 +93,17 @@ namespace DataAccess.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Employees");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Email = "admin@gmail.com",
+                            Name = "Admin",
+                            Password = "12345678",
+                            Phone = "12345678",
+                            RoleId = 1
+                        });
                 });
 
             modelBuilder.Entity("Models.EmployeeTraining", b =>

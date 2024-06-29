@@ -44,7 +44,7 @@ namespace DataAccess.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Roles",
+                name: "Role",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -53,7 +53,7 @@ namespace DataAccess.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Roles", x => x.Id);
+                    table.PrimaryKey("PK_Role", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -125,7 +125,12 @@ namespace DataAccess.Migrations
                 });
 
             migrationBuilder.InsertData(
-                table: "Roles",
+                table: "Employees",
+                columns: new[] { "Id", "Email", "Name", "Password", "Phone", "RoleId" },
+                values: new object[] { 1, "admin@gmail.com", "Admin", "12345678", "12345678", 1 });
+
+            migrationBuilder.InsertData(
+                table: "Role",
                 columns: new[] { "Id", "Name" },
                 values: new object[,]
                 {
@@ -170,7 +175,7 @@ namespace DataAccess.Migrations
                 name: "EmployeeTrainings");
 
             migrationBuilder.DropTable(
-                name: "Roles");
+                name: "Role");
 
             migrationBuilder.DropTable(
                 name: "Sections");

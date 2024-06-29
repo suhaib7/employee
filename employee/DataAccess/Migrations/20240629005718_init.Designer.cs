@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240628231827_init")]
+    [Migration("20240629005718_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -96,6 +96,17 @@ namespace DataAccess.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Employees");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Email = "admin@gmail.com",
+                            Name = "Admin",
+                            Password = "12345678",
+                            Phone = "12345678",
+                            RoleId = 1
+                        });
                 });
 
             modelBuilder.Entity("Models.EmployeeTraining", b =>
@@ -113,7 +124,7 @@ namespace DataAccess.Migrations
                     b.ToTable("EmployeeTrainings");
                 });
 
-            modelBuilder.Entity("Models.Roles", b =>
+            modelBuilder.Entity("Models.Role", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -127,7 +138,7 @@ namespace DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Roles");
+                    b.ToTable("Role");
 
                     b.HasData(
                         new
