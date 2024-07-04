@@ -5,7 +5,7 @@
     <div class="card-header bg-secondary bg-gradient ml-0 py-3">
         <div class="row">
             <div class="col-12 text-center">
-                <h2 class="text-white py-2">Departments</h2>
+                <h2 class="text-white py-2">Create Department</h2>
             </div>
         </div>
     </div>
@@ -14,9 +14,12 @@
             <div class="col-6">
             </div>
             <div class="col-6 text-end">
-                <a id="btnAddRow" class="btn btn-primary">
-                    <i class="bi bi-plus-circle"></i> Create New Department
-                </a>
+                @* @if (ViewBag.Role == "Admin")
+                { *@
+                    <a id="btnAddRow" class="btn btn-primary">
+                        <i class="bi bi-plus-circle"></i> Create New Department
+                    </a>
+                @* } *@
             </div>
         </div>
 
@@ -29,16 +32,6 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach (var department in Model)
-                {
-                    <tr>
-                        <td>@department.NameEN</td>
-                        <td>@department.NameAR</td>
-                        <td>
-                            <button class="btn btn-danger btnDelete" data-id="@department._id"><i class="bi bi-trash"></i> Delete</button>
-                        </td>
-                    </tr>
-                }
             </tbody>
         </table>
     </div>
@@ -47,40 +40,54 @@
 @section Scripts {
     <script>
         $(document).ready(function () {
+            var departmentsJson = @Html.Raw(Json.Serialize(Model));
+
+            function populateTable(data) {
+                data.forEach(item => {
+                    var row = `
+                    <tr>
+                       <td>${item.nameEN}</td>
+                       <td>${item.nameAR}</td>
+                       <td>
+                           <button class="btn btn-danger btnDelete" data-_id="${item._id}"><i class="bi bi-trash"></i> Delete</button>
+                       </td>
+                    </tr>`;
+                    $('#tblData tbody').append(row);
+                });
+            }
+
+            populateTable(departmentsJson);
             $('#btnAddRow').on('click', function (e) {
                 e.preventDefault();
                 if ($('#tblData').find('.editable-row').length > 0) {
                     alert('Finish editing the existing row before adding a new one.');
                     return;
                 }
+
                 var newRow = `
-                                <tr class="editable-row">
-                                  <td><input type="text" class="form-control" id="inputNameEn" placeholder="Enter Name in English"></td>
-                                  <td><input type="text" class="form-control" id="inputNameAr" placeholder="Enter Name in Arabic"></td>
-                                  <td class="text-center">
-                                      <button class="btn btn-success btnSaveRow"><i class="bi bi-check-circle"></i> Save</button>
-                                      <button class="btn btn-danger btnCancelRow"><i class="bi bi-x-circle"></i> Cancel</button>
-                                  </td>
-                                </tr>`;
+                <tr class="editable-row">
+                   <td><input type="text" class="form-control" id="inputNameEn" placeholder="Enter Name in English"></td>
+                   <td><input type="text" class="form-control" id="inputNameAr" placeholder="Enter Name in Arabic"></td>
+                   <td class="text-center">
+                       <button class="btn btn-success btnSaveRow"><i class="bi bi-check-circle"></i> Save</button>
+                       <button class="btn btn-danger btnCancelRow"><i class="bi bi-x-circle"></i> Cancel</button>
+                   </td>
+                </tr>`;
 
                 $('#tblData').find('tbody').append(newRow);
             });
-
             $('#tblData').on('click', '.btnSaveRow', function () {
                 var $row = $(this).closest('tr');
                 var nameEn = $row.find('#inputNameEn').val().trim();
                 var nameAr = $row.find('#inputNameAr').val().trim();
-
                 if (nameEn === "" || nameAr === "") {
                     alert("Please fill in both fields.");
                     return;
                 }
-
                 var department = {
                     nameEN: nameEn,
                     nameAR: nameAr
                 };
-
                 $.ajax({
                     url: '@Url.Action("SaveDepartment", "Department")',
                     type: 'POST',
@@ -104,8 +111,9 @@
             });
 
             $('#tblData').on('click', '.btnDelete', function () {
-                var departmentId = $(this).data('id');
-                var url = '@Url.Action("Delete", "Department")' + '?id=' + departmentId;
+                var departmentId = $(this).data('_id');
+                var url = `/department/delete/${departmentId}`;
+
                 Swal.fire({
                     title: "Are you sure?",
                     text: "You won't be able to revert this!",
@@ -136,4 +144,5 @@
             });
         });
     </script>
+
 }

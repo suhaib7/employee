@@ -11,15 +11,18 @@ function loadDataTable() {
             "dataSrc": "data"
         },
         "columns": [
-            { "data": "nameEN", "width": "25%" },
-            { "data": "nameAR", "width": "25%" },
-            { "data": "departmentEN", "width": "25%" },
+            { "data": "nameEN", "width": "20%" },
+            { "data": "nameAR", "width": "20%" },
             {
-                "data": "id",
+                "data": "department.nameEN",
+                "width": "20%"
+            },
+            {
+                "data": "_id",
                 "render": function (data) {
                     return `<div class="w-75 btn-group" role="group">
-                                <a onClick="Delete('/section/delete/${data}')" class="btn btn-danger mx-2"> <i class="bi bi-trash-fill"></i> Delete </a>
-                           </div>`;
+                                <a onClick="deleteSection('${data}')" class="btn btn-danger mx-2"> <i class="bi bi-trash-fill"></i> Delete </a>
+                            </div>`;
                 },
                 "width": "25%"
             }
@@ -33,7 +36,7 @@ function loadDataTable() {
 
 
 
-function Delete(url) {
+function deleteSection(id) {
     Swal.fire({
         title: "Are you sure?",
         text: "You won't be able to revert this!",
@@ -45,7 +48,7 @@ function Delete(url) {
     }).then((result) => {
         if (result.isConfirmed) {
             $.ajax({
-                url: url,
+                url: `/section/delete/${id}`,
                 type: 'DELETE',
                 success: function (data) {
                     if (data.success) {
@@ -56,7 +59,7 @@ function Delete(url) {
                     }
                 },
                 error: function (xhr, status, error) {
-                    toastr.error('An error occurred while deleting the section: ' + error);
+                    toastr.error('An error occurred while deleting the employee: ' + error);
                 }
             });
         }

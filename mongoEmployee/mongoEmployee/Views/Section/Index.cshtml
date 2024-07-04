@@ -1,0 +1,129 @@
+﻿@using Models
+@model List<Section>
+
+    <div class="card shadow border-0 my-4">
+    <div class="card-header bg-secondary bg-gradient ml-0 py-3">
+        <div class="row">
+            <div class="col-12 text-center">
+                <h2 class="text-white py-2">Create Section</h2>
+            </div>
+        </div>
+    </div>
+    <div class="card-body p-4">
+        <div class="row pb-3">
+            <div class="col-6">
+            </div>
+            <div class="col-6 text-end">
+                @* @if (ViewBag.Role == "Admin")
+                { *@
+                <a id="btnAddRow" class="btn btn-primary">
+                    <i class="bi bi-plus-circle"></i> Create New Section
+                </a>
+                @* } *@
+            </div>
+        </div>
+
+        <table id="tblData" class="table table-bordered table-striped" style="width:100%">
+            <thead>
+                <tr>
+                    <th>English Name</th>
+                    <th>Arabic Name</th>
+                    <th>Department</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+        <div id="departmentDropdown" style="display: none;">
+            <select id="inputDepartment" class="form-control">
+                @foreach (var department in ViewBag.DepartmentList)
+                {
+                    <option value="@department.Value">@department.Text</option>
+                }
+            </select>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#btnAddRow').on('click', function (e) {
+                e.preventDefault();
+                if ($('#tblData').find('.editable-row').length > 0) {
+                    alert('Finish editing the existing row before adding a new one.');
+                    return;
+                }
+
+                var newRow = `
+                        <tr class="editable-row">
+                            <td><input type="text" class="form-control" id="inputNameEn" placeholder="Enter Name in English"></td>
+                            <td><input type="text" class="form-control" id="inputNameAr" placeholder="Enter Name in Arabic"></td>
+                            <td>
+                                <div id="departmentDropdown" style="display: block;">
+                                    <select id="inputDepartment" class="form-control">
+        @foreach (var department in ViewBag.DepartmentList)
+        {
+                                                <option value="@department.Value">@department.Text</option>
+        }
+                                    </select>
+                                </div>
+                            </td>
+                            <td class="text-center">
+                                <button class="btn btn-success btnSaveRow"><i class="bi bi-check-circle"></i> Save</button>
+                                <button class="btn btn-danger btnCancelRow"><i class="bi bi-x-circle"></i> Cancel</button>
+                            </td>
+                        </tr>`;
+
+                $('#tblData').find('tbody').append(newRow);
+            });
+
+            $('#tblData').on('click', '.btnSaveRow', function () {
+                var $row = $(this).closest('tr');
+                var nameEn = $row.find('#inputNameEn').val().trim();
+                var nameAr = $row.find('#inputNameAr').val().trim();
+                var departmentId = $row.find('#inputDepartment').val(); // Fetch department ID
+
+                if (nameEn === "" || nameAr === "" || departmentId === "") {
+                    alert("Please fill in all fields.");
+                    return;
+                }
+
+                $.ajax({
+                    url: '@Url.Action("SaveSection", "Section")',
+                    type: 'POST',
+                    data: {
+                        NameEn: nameEn,
+                        NameAr: nameAr,
+                        DepartmentId: departmentId // Send department ID to the server
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            var savedRow = `
+                                    <tr>
+                                        <td>${nameEn}</td>
+                                        <td>${nameAr}</td>
+                                        <td>${response.departmentName}</td> <!-- Optionally display department name -->
+                                    </tr>`;
+
+                            $row.replaceWith(savedRow);
+                            location.reload();
+                        } else {
+                            alert('Error saving section: ' + response.message);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        alert('An error occurred while saving the section: ' + error);
+                    }
+                });
+            });
+
+            $('#tblData').on('click', '.btnCancelRow', function () {
+                $(this).closest('tr').remove();
+            });
+        });
+    </script>
+    <script src="~/js/section.js"></script>
+}
