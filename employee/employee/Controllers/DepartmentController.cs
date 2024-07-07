@@ -30,7 +30,7 @@ namespace employee.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error retrieving departments");
-                throw; // Consider handling this exception to display a friendly error message
+                throw;
             }
         }
 

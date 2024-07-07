@@ -11,6 +11,7 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddTransient<IEmployeeRepository, EmployeeRepository>();
 builder.Services.AddTransient<IDepartmentRepository, DepartmentRepository>();
 builder.Services.AddTransient<ISectionRepository, SectionRepository>();
+builder.Services.AddTransient<ITrainingRepository,TrainingRepository>();
 
 builder.Services.AddControllersWithViews().AddJsonOptions(options =>
 {

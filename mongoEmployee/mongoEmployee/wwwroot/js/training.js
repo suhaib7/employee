@@ -7,24 +7,17 @@ $(document).ready(function () {
 function loadDataTable() {
     dataTable = $('#tblData').DataTable({
         "ajax": {
-            "url": '/employee/getall',
+            "url": '/training/getall',
             "dataSrc": "data"
         },
         "columns": [
             { "data": "name", "width": "25%" },
             { "data": "email", "width": "25%" },
             {
-                "data": "trainingNames",
-                "render": function (data) {
-                    return data ? data.join(', ') : 'No Trainings';
-                },
-                "width": "25%"
-            },
-            {
                 "data": "_id",
                 "render": function (data) {
                     return `<div class="w-75 btn-group" role="group">
-                                <a onClick="deleteEmployee('${data}')" class="btn btn-danger mx-2"> <i class="bi bi-trash-fill"></i> Delete </a>
+                                <a onClick="deleteTraining('${data}')" class="btn btn-danger mx-2"> <i class="bi bi-trash-fill"></i> Delete </a>
                             </div>`;
                 },
                 "width": "25%"
@@ -33,7 +26,7 @@ function loadDataTable() {
     });
 }
 
-function deleteEmployee(id) {
+function deleteTraining(id) {
     Swal.fire({
         title: "Are you sure?",
         text: "You won't be able to revert this!",
@@ -45,7 +38,7 @@ function deleteEmployee(id) {
     }).then((result) => {
         if (result.isConfirmed) {
             $.ajax({
-                url: `/employee/delete/${id}`,
+                url: `/training/delete/${id}`,
                 type: 'DELETE',
                 success: function (data) {
                     if (data.success) {
