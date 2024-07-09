@@ -13,7 +13,7 @@ function loadDataTable() {
         "columns": [
             { "data": "name", "width": "25%" },
             { "data": "email", "width": "25%" },
-            {
+             {
                 "data": "trainingNames",
                 "render": function (data) {
                     return data ? data.join(', ') : 'No Trainings';

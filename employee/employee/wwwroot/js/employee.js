@@ -11,17 +11,29 @@ function loadDataTable() {
             "dataSrc": "data"
         },
         "columns": [
-            { "data": "name", "width": "25%" },
-            { "data": "email", "width": "25%" },
-            { "data": "phone", "width": "25%" },
+            { "data": "name", "width": "20%" },
+            { "data": "email", "width": "20%" },
+            { "data": "phone", "width": "20%" },
+            {
+                "data": "trainings",
+                "render": function (data) {
+                    if (data && data.length > 0) {
+                        return data.map(t => t.name).join(", ");
+                    }
+                    return "No Trainings";
+                },
+                "width": "20%"
+            },
             {
                 "data": "id",
                 "render": function (data) {
                     return `<div class="w-75 btn-group" role="group">
-                                <a onClick="Delete('/employee/delete/${data}')" class="btn btn-danger mx-2"> <i class="bi bi-trash-fill"></i> Delete </a>
+                                <a onClick="Delete('/employee/delete/${data}')" class="btn btn-danger mx-2">
+                                    <i class="bi bi-trash-fill"></i> Delete
+                                </a>
                             </div>`;
                 },
-                "width": "25%"
+                "width": "20%"
             }
         ]
     });

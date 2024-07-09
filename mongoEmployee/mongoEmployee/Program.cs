@@ -5,6 +5,7 @@ using Newtonsoft.Json.Serialization;
 using Newtonsoft.Json;
 
 
+
 var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
@@ -12,6 +13,7 @@ builder.Services.AddTransient<IEmployeeRepository, EmployeeRepository>();
 builder.Services.AddTransient<IDepartmentRepository, DepartmentRepository>();
 builder.Services.AddTransient<ISectionRepository, SectionRepository>();
 builder.Services.AddTransient<ITrainingRepository,TrainingRepository>();
+builder.Services.AddTransient<IProductRepository,ProductRepository>();
 
 builder.Services.AddControllersWithViews().AddJsonOptions(options =>
 {
@@ -19,15 +21,16 @@ builder.Services.AddControllersWithViews().AddJsonOptions(options =>
 });
 
 builder.Services.AddControllersWithViews()
-        .AddNewtonsoftJson(options =>
-        {
-            options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
-            options.SerializerSettings.Formatting = Formatting.Indented;
-            options.SerializerSettings.ContractResolver = new DefaultContractResolver
-            {
-                NamingStrategy = new CamelCaseNamingStrategy()
-            };
-        });
+     .AddNewtonsoftJson(options =>
+     {
+         options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+         options.SerializerSettings.Formatting = Formatting.Indented;
+         options.SerializerSettings.ContractResolver = new DefaultContractResolver
+         {
+             NamingStrategy = new CamelCaseNamingStrategy()
+         };
+     });
+
 builder.Services.Configure<Settings>(options =>
 {
     options.ConnectionString = builder.Configuration.GetSection("MongoDB:ConnectionString").Value;
